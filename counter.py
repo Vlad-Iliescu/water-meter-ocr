@@ -18,6 +18,25 @@ def display(img, title="Image"):
     cv2.imshow(title, img)
 
 
+def display_lines(img, lines, title):
+    img = img.copy()
+
+    for line in lines:
+        for rho, theta in line:
+            a = np.cos(theta)
+            b = np.sin(theta)
+            x0 = a * rho
+            y0 = b * rho
+            x1 = int(x0 + 1000 * (-b))
+            y1 = int(y0 + 1000 * (a))
+            x2 = int(x0 - 1000 * (-b))
+            y2 = int(y0 - 1000 * (a))
+
+            cv2.line(img, (x1, y1), (x2, y2), (255, 0, 0), 1)
+
+    display(img, title)
+
+
 def rotate(img: ndarray, degrees: int):
     height, width = img.shape[:2]
     center_x, center_y = (width / 2, height / 2)
@@ -67,21 +86,28 @@ if __name__ == '__main__':
     orig = cv2.imread('counterraw.png')
     d and display(orig, "Original")
 
-    # grayscale
-    gray = cv2.cvtColor(orig, cv2.COLOR_BGR2GRAY)
-    s and show_image(gray, prev=orig)
-    d and display(gray, "Greyscale")
-
     # rotate 90 deg
-    rotated = rotate(gray, 90)
-    s and show_image(rotated, prev=gray)
+    rotated = rotate(orig, 90)
+    s and show_image(rotated, prev=orig)
     d and display(rotated, "Rotated 90")
 
+    # grayscale
+    gray = cv2.cvtColor(rotated, cv2.COLOR_BGR2GRAY)
+    s and show_image(gray, prev=rotated)
+    d and display(gray, "Greyscale")
+
+
+
     # edge detection
-    edges = canny(rotated, 200, 240)
-    s and show_image(edges, prev=rotated)
-    d and display(edges, "Canny")
+    edges = canny(gray, 200, 140)
+    s and show_image(edges, prev=gray)
+    display(edges, "Canny")
 
     # lines
+    lines = hough_lines(edges)
+    # show_image(lines, prev=edges)
+    display_lines(rotated, lines, "Lines")
+
+
 
     cv2.waitKey()
