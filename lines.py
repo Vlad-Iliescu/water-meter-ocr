@@ -50,7 +50,7 @@ def do_lines(val):
     global lowThreshold
     lowThreshold = val or 1
     print(lowThreshold)
-    lines = cv2.HoughLines(gray, 1, np.pi / lowThreshold, 140)
+    lines = cv2.HoughLines(gray, 1, np.pi / 180, lowThreshold)
 
     cv2.imshow(window_name, img_lines(gray, lines))
 

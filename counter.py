@@ -80,6 +80,25 @@ def hough_lines(img):
     return lines
 
 
+def get_average_angle(lines):
+    filtered_lines = []
+    theta_min = 60 * np.pi / 180
+    theta_max = 120 * np.pi / 180
+    theta_avr = 0
+    theta_deg = 0
+    for line in lines:
+        theta = line[0][1]
+        if theta_min < theta < theta_max:
+            filtered_lines.append(lines)
+            theta_avr += theta
+
+    if len(filtered_lines) > 0:
+        theta_avr /= len(filtered_lines)
+        theta_deg = (theta_avr / np.pi * 180) - 90
+
+    return theta_deg
+
+
 if __name__ == '__main__':
     d = False
     s = False
@@ -96,18 +115,21 @@ if __name__ == '__main__':
     s and show_image(gray, prev=rotated)
     d and display(gray, "Greyscale")
 
-
-
     # edge detection
     edges = canny(gray, 200, 140)
     s and show_image(edges, prev=gray)
-    display(edges, "Canny")
+    d and display(edges, "Canny")
 
     # lines
     lines = hough_lines(edges)
     # show_image(lines, prev=edges)
-    display_lines(rotated, lines, "Lines")
+    d and display_lines(rotated, lines, "Lines")
 
-
+    # rotate again
+    avg_angle = get_average_angle(lines)
+    print(avg_angle)
+    normal = rotate(gray, -avg_angle)
+    s and show_image(normal, prev=gray)
+    d and display(normal, "Normal")
 
     cv2.waitKey()
