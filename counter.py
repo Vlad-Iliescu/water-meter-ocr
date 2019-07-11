@@ -150,8 +150,24 @@ def display_boxes(img, boxes, title):
     display(img, title)
 
 
+def sort_by_x(boxes):
+    boxes = boxes.copy()
+    boxes.sort(key=lambda x: x[0])
+    return boxes
+
+
+def get_rois(img, boxes):
+    rois = []
+    for box in boxes:
+        x, y, w, h = box
+        roi = img[y:y + h, x:x + w]
+        rois.append(roi)
+
+    return rois
+
+
 if __name__ == '__main__':
-    d = True
+    d = False
     s = False
     orig = cv2.imread('counterraw.png')
     d and display(orig, "1. Original")
@@ -188,13 +204,20 @@ if __name__ == '__main__':
     s and show_image(normal_edges, prev=normal)
     d and display(normal_edges, "7. Normal Canny")
 
+    # contours
     contours, hierarchy = cv2.findContours(normal_edges.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
     bounding_boxes, filtered_contours = filter_contours(contours)
     skew_normal = rotate(rotated, -avg_angle)
     d and display_contours(skew_normal, filtered_contours, "8. Normal Contours")
     d and display_boxes(skew_normal, bounding_boxes, "9. Normal Boxes")
 
+    # aligned boxes
     aligned_boxes = find_all_aligned(bounding_boxes)
     d and display_boxes(skew_normal, aligned_boxes, "10. Aligned Boxes")
+    aligned_boxes_by_x = sort_by_x(aligned_boxes)
+
+    rois = get_rois(skew_normal, aligned_boxes_by_x)
+    cv2.imshow('segment no:', rois[1])
+    print(rois)
 
     cv2.waitKey()
