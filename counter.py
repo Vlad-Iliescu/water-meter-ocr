@@ -115,52 +115,86 @@ def filter_contours(contours):
     return bounding_boxes, filtered_contours
 
 
+def find_aligned(boxes):
+    start = boxes[0]
+    result = [start]
+    for box in boxes[1:]:
+        if abs(start[1] - box[1]) < 10 and abs(start[3] - box[3]) < 5:
+            result.append(box)
+
+    return result
+
+
+def find_all_aligned(bounding_boxes):
+    aligned = []
+    for i, box in enumerate(bounding_boxes):
+        tmp = find_aligned(bounding_boxes[i:])
+        if len(tmp) > len(aligned):
+            aligned = tmp
+
+    return aligned
+
+
 def display_contours(img, contours, title):
     img = img.copy()
     cv2.drawContours(img, contours, -1, (0, 255, 255), 1)
     display(img, title)
 
 
+def display_boxes(img, boxes, title):
+    img = img.copy()
+    for box in boxes:
+        x, y, w, h = box
+        cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
+
+    display(img, title)
+
+
 if __name__ == '__main__':
-    d = False
+    d = True
     s = False
     orig = cv2.imread('counterraw.png')
-    d and display(orig, "Original")
+    d and display(orig, "1. Original")
 
     # rotate 90 deg
     rotated = rotate(orig, 90)
     s and show_image(rotated, prev=orig)
-    d and display(rotated, "Rotated 90")
+    d and display(rotated, "2. Rotated 90")
 
     # grayscale
     gray = cv2.cvtColor(rotated, cv2.COLOR_BGR2GRAY)
     s and show_image(gray, prev=rotated)
-    d and display(gray, "Greyscale")
+    d and display(gray, "3. Greyscale")
 
     # edge detection
-    edges = canny(gray, 200, 140)
+    edges = canny(gray, 120, 180)
     s and show_image(edges, prev=gray)
-    d and display(edges, "Canny")
+    d and display(edges, "4. Canny")
 
     # lines
     lines = hough_lines(edges)
     # show_image(lines, prev=edges)
-    d and display_lines(rotated, lines, "Lines")
+    d and display_lines(rotated, lines, "5. Lines")
 
     # rotate again for skew angle
     avg_angle = get_average_angle(lines)
     print(avg_angle)
     normal = rotate(gray, -avg_angle)
     s and show_image(normal, prev=gray)
-    d and display(normal, "Normal")
+    d and display(normal, "6. Normal")
 
     # noraml edge detection
-    normal_edges = canny(normal, 200, 140)
+    normal_edges = canny(normal, 120, 280)
     s and show_image(normal_edges, prev=normal)
-    d and display(normal_edges, "Normal Canny")
+    d and display(normal_edges, "7. Normal Canny")
 
     contours, hierarchy = cv2.findContours(normal_edges.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
     bounding_boxes, filtered_contours = filter_contours(contours)
-    display_contours(rotate(rotated, -avg_angle), filtered_contours, "Contours")
+    skew_normal = rotate(rotated, -avg_angle)
+    d and display_contours(skew_normal, filtered_contours, "8. Normal Contours")
+    d and display_boxes(skew_normal, bounding_boxes, "9. Normal Boxes")
+
+    aligned_boxes = find_all_aligned(bounding_boxes)
+    d and display_boxes(skew_normal, aligned_boxes, "10. Aligned Boxes")
 
     cv2.waitKey()
