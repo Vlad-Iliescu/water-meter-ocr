@@ -99,6 +99,28 @@ def get_average_angle(lines):
     return theta_deg
 
 
+def filter_contours(contours):
+    bounding_boxes = []
+    filtered_contours = []
+    min_height = 20
+    max_height = 90
+    for contour in contours:
+        bounds = cv2.boundingRect(contour)
+        height = bounds[3]
+        width = bounds[2]
+        if height > min_height and max_height > height > width:
+            bounding_boxes.append(bounds)
+            filtered_contours.append(contour)
+
+    return bounding_boxes, filtered_contours
+
+
+def display_contours(img, contours, title):
+    img = img.copy()
+    cv2.drawContours(img, contours, -1, (0, 255, 255), 1)
+    display(img, title)
+
+
 if __name__ == '__main__':
     d = False
     s = False
@@ -125,11 +147,20 @@ if __name__ == '__main__':
     # show_image(lines, prev=edges)
     d and display_lines(rotated, lines, "Lines")
 
-    # rotate again
+    # rotate again for skew angle
     avg_angle = get_average_angle(lines)
     print(avg_angle)
     normal = rotate(gray, -avg_angle)
     s and show_image(normal, prev=gray)
     d and display(normal, "Normal")
+
+    # noraml edge detection
+    normal_edges = canny(normal, 200, 140)
+    s and show_image(normal_edges, prev=normal)
+    d and display(normal_edges, "Normal Canny")
+
+    contours, hierarchy = cv2.findContours(normal_edges.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    bounding_boxes, filtered_contours = filter_contours(contours)
+    display_contours(rotate(rotated, -avg_angle), filtered_contours, "Contours")
 
     cv2.waitKey()
