@@ -38,6 +38,9 @@ def display_lines(img, lines, title):
 
 
 def rotate(img: ndarray, degrees: int):
+    if degrees == 0:
+        return img
+
     height, width = img.shape[:2]
     center_x, center_y = (width / 2, height / 2)
 
@@ -216,7 +219,7 @@ if __name__ == '__main__':
     d and display_boxes(skew_normal, aligned_boxes, "10. Aligned Boxes")
     aligned_boxes_by_x = sort_by_x(aligned_boxes)
 
-    rois = get_rois(skew_normal, aligned_boxes_by_x)
+    rois = get_rois(normal_edges, aligned_boxes_by_x)
     cv2.imshow('segment no:', rois[1])
     print(rois)
 
