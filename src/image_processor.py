@@ -20,9 +20,6 @@ class ImageProcessor:
 
         self.rois = []
 
-        if self._debug:
-            cv2.waitKey()
-
     def show_image(self, image, title):
         if self._debug:
             cv2.imshow(title, image)
@@ -128,6 +125,9 @@ class ImageProcessor:
 
         self.rois = self.rois_cut(edges, sorted_boxes)
         self.show_rois(self.rois, "12. ROIs")
+
+        if self._debug:
+            cv2.waitKey()
 
     @staticmethod
     def grey_out(original_image):
