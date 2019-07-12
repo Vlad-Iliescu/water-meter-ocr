@@ -53,5 +53,5 @@ class Lines:
 
 
 if __name__ == "__main__":
-    canny = Lines('../apometru.jpg')
+    canny = Lines('../wm.jpg')
     canny.run()

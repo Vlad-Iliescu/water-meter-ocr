@@ -35,5 +35,5 @@ class Canny:
 
 
 if __name__ == "__main__":
-    canny = Canny('../apometru.jpg')
+    canny = Canny('../wm.jpg')
     canny.run()
