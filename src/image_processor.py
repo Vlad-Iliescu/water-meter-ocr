@@ -71,6 +71,17 @@ class ImageProcessor:
 
             self.show_image(img, title)
 
+    def rois_to_image(self):
+        rois = self.rois.copy()
+        h_min = min(im.shape[0] for im in rois)
+        rois = [cv2.resize(im, (int(im.shape[1] * h_min / im.shape[0]), h_min), interpolation=cv2.INTER_CUBIC)
+                for im in rois]
+        img = rois[0]
+        for roi in rois[1:]:
+            img = np.concatenate((img, roi), axis=1)
+
+        return img
+
     def fix_skew_angle(self):
         # edge detection
         edges = self.edges_detection(
