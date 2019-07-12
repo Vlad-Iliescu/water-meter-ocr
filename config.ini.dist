@@ -1,0 +1,10 @@
+[MAIN]
+debug: true
+rotation_deg: 90
+canny_threshold_1: 120
+canny_threshold_2: 280
+line_threshold: 140
+digit_min_height: 20
+digit_max_height: 90
+digit_y_alignment: 10
+ocr_max_dist: 600000
