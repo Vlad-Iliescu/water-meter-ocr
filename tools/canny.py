@@ -15,7 +15,7 @@ class Canny:
 
     def process(self):
         print(self.low, self.high)
-        detected_edges = cv2.Canny(self.processor.base_image, self.low, self.high)
+        detected_edges = ImageProcessor.edges_detection(self.processor.base_image, self.low, self.high)
         cv2.imshow(self.window_name, detected_edges)
 
     def process_low(self, value):
