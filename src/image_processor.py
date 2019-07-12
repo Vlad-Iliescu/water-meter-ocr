@@ -18,8 +18,6 @@ class ImageProcessor:
         self.base_image = self.grey_out(self.original_image)
         self.show_image(self.base_image, "3. Gray image")
 
-        self.process()
-
         self.rois = []
 
         if self._debug:
@@ -28,6 +26,7 @@ class ImageProcessor:
     def show_image(self, image, title):
         if self._debug:
             cv2.imshow(title, image)
+            cv2.waitKey(1)
 
     def show_lines(self, image, lines, title):
         if self._debug:
