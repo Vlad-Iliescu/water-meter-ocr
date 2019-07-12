@@ -234,3 +234,15 @@ class ImageProcessor:
             rois.append(roi)
 
         return rois
+
+    @staticmethod
+    def black_and_white(original_image):
+        (_, black_white) = cv2.threshold(original_image, 127, 255, cv2.THRESH_BINARY)
+
+        return black_white
+
+    @staticmethod
+    def blur(original_image):
+        blur = cv2.blur(original_image, (5, 5))
+
+        return blur
